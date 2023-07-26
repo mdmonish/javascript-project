@@ -77,6 +77,20 @@ userTransactionMovement.forEach(function(mov,i){
 })
 }
 displayTransactionMovement(account1.movements)
+
+//creating username
+const users = function(accounts){
+    //update accounts with complete details of accounts
+    accounts.forEach(function(acc){
+        acc.username = acc.owner.toLowerCase().split(" ").map((usr)=>usr[0]).join('');
+    })
+
+}
+
+users(accounts)
+console.log(accounts)
+
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
