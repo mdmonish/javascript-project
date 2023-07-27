@@ -78,6 +78,14 @@ userTransactionMovement.forEach(function(mov,i){
 }
 displayTransactionMovement(account1.movements)
 
+//calculate total balance
+
+const displayMovementBalance = function(userTransactionMovement){
+ const totalBalance =  userTransactionMovement.reduce(function(acc,curr){ return acc+ curr},0)
+ labelBalance.textContent = `${totalBalance} EUR`
+}
+displayMovementBalance(account1.movements)
+
 //creating username
 const users = function(accounts){
     //update accounts with complete details of accounts
