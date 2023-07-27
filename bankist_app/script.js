@@ -86,6 +86,23 @@ const displayMovementBalance = function(userTransactionMovement){
 }
 displayMovementBalance(account1.movements)
 
+//Deposit , withdrawal summary and intrest
+
+const calcSummaryMovement = function(userTransactionMovement){
+
+  const deposits = userTransactionMovement.filter(mov=>mov>0).reduce((acc,dpt)=>acc+dpt,0)
+  labelSumIn.textContent = `${deposits}€`
+
+  const withdrawn = userTransactionMovement.filter(mov=>mov<0).reduce((acc,dpt)=>acc+dpt,0)
+  labelSumOut.textContent = `${Math.abs(withdrawn)}€`
+
+  const intrest = userTransactionMovement.filter(mov=>mov>0).map(amt=> amt*1.2/100).filter(val=>val>=1).reduce((acc,int)=>acc+int,0)
+  labelSumInterest.textContent = `${intrest}€`
+
+
+};
+calcSummaryMovement(account1.movements)
+
 //creating username
 const users = function(accounts){
     //update accounts with complete details of accounts
@@ -96,7 +113,7 @@ const users = function(accounts){
 }
 
 users(accounts)
-console.log(accounts)
+
 
 
 /////////////////////////////////////////////////
@@ -110,5 +127,7 @@ const currencies = new Map([
 ]);
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+const findMax = movements.reduce((acc,cur)=>{if(acc<cur)return cur; else{ return acc}},0);
 
 /////////////////////////////////////////////////
