@@ -76,7 +76,7 @@ userTransactionMovement.forEach(function(mov,i){
   containerMovements.insertAdjacentHTML('afterbegin',html)
 })
 }
-displayTransactionMovement(account1.movements)
+// displayTransactionMovement(account1.movements)
 
 //calculate total balance
 
@@ -84,24 +84,24 @@ const displayMovementBalance = function(userTransactionMovement){
  const totalBalance =  userTransactionMovement.reduce(function(acc,curr){ return acc+ curr},0)
  labelBalance.textContent = `${totalBalance} EUR`
 }
-displayMovementBalance(account1.movements)
+// displayMovementBalance(account1.movements)
 
 //Deposit , withdrawal summary and intrest
 
-const calcSummaryMovement = function(userTransactionMovement){
+const calcSummaryMovement = function(user){
 
-  const deposits = userTransactionMovement.filter(mov=>mov>0).reduce((acc,dpt)=>acc+dpt,0)
+  const deposits = user.movements.filter(mov=>mov>0).reduce((acc,dpt)=>acc+dpt,0)
   labelSumIn.textContent = `${deposits}€`
 
-  const withdrawn = userTransactionMovement.filter(mov=>mov<0).reduce((acc,dpt)=>acc+dpt,0)
+  const withdrawn = user.movements.filter(mov=>mov<0).reduce((acc,dpt)=>acc+dpt,0)
   labelSumOut.textContent = `${Math.abs(withdrawn)}€`
 
-  const intrest = userTransactionMovement.filter(mov=>mov>0).map(amt=> amt*1.2/100).filter(val=>val>=1).reduce((acc,int)=>acc+int,0)
+  const intrest = user.movements.filter(mov=>mov>0).map(amt=> amt*user.interestRate/100).filter(val=>val>=1).reduce((acc,int)=>acc+int,0)
   labelSumInterest.textContent = `${intrest}€`
 
 
 };
-calcSummaryMovement(account1.movements)
+// calcSummaryMovement(account1.movements)
 
 //creating username
 const users = function(accounts){
@@ -112,7 +112,33 @@ const users = function(accounts){
 
 }
 
-users(accounts)
+users(accounts);
+
+//Event handler
+let currentUser
+btnLogin.addEventListener('click',function(e){
+e.preventDefault();
+
+currentUser = accounts.find((acc)=>acc.username === inputLoginUsername.value)
+
+if(currentUser?.pin === Number(inputLoginPin.value)){
+ 
+  //display ui login message
+  labelWelcome.textContent = `Welcome back, ${currentUser.owner.split(' ')[0]}`;
+  containerApp.style.opacity = 100;
+  //clear input fields
+  inputLoginUsername.value = inputLoginPin.value ='';
+  inputLoginPin.blur();
+  inputLoginUsername.blur();
+  //display movement
+  displayTransactionMovement(currentUser.movements)
+  //display total
+  displayMovementBalance(currentUser.movements)
+  //display summary
+  calcSummaryMovement(currentUser)
+}
+
+})
 
 
 
