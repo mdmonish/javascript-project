@@ -158,6 +158,16 @@ btnTransfer.addEventListener('click',function(e){
   }
 });
 
+btnLoan.addEventListener('click',function(e){
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  inputLoanAmount.value ='';
+  if(amount>0 && currentUser.movements.some(dpt=> dpt> amount*0.1)){
+    currentUser.movements.push(amount);
+    updateUi(currentUser)
+  }
+})
+
 btnClose.addEventListener('click',function(e){
   e.preventDefault();
 
