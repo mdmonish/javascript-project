@@ -61,10 +61,12 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayTransactionMovement = function(userTransactionMovement){
+const displayTransactionMovement = function(userTransactionMovement,sort=false){
 containerMovements.innerHTML = ''; //it will empty jte previous elements
 
-userTransactionMovement.forEach(function(mov,i){
+const movs = sort? userTransactionMovement.slice().sort((a,b)=>a-b):userTransactionMovement ;
+
+movs.forEach(function(mov,i){
     const type = mov>0 ?"deposit" :"withdrawal"
     //using html template iwth the data 
     const html =`<div class="movements__row">
@@ -179,8 +181,13 @@ btnClose.addEventListener('click',function(e){
     labelWelcome.textContent = `Log in to get started`;
   }
   inputClosePin.value = inputCloseUsername.value ='';
+})
 
-
+let sorted=false;
+btnSort.addEventListener('click',function(e){
+  e.preventDefault();
+  displayTransactionMovement(currentUser.movements,!sorted);
+  sorted=!sorted
 })
 
 
