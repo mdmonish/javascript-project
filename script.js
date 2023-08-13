@@ -215,7 +215,7 @@ calcSummaryMovement(acc)
 btnLogin.addEventListener('click',function(e){
 e.preventDefault();
 
-currentUser = accounts.find((acc)=>acc.username === inputLoginUsername.value)
+currentUser = accounts.find((acc)=>acc.username.toLowerCase() === inputLoginUsername.value.toLowerCase())
 
 if(currentUser?.pin === Number(inputLoginPin.value)){
  
