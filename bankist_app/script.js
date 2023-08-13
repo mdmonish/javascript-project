@@ -1,7 +1,5 @@
 'use strict';
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
 // BANKIST APP
 
 // Data
@@ -47,7 +45,6 @@ const account2 = {
 
 const accounts = [account1, account2];
 
-
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
@@ -73,6 +70,8 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+
+let currentUser,timer;
 
 //Timer 
 
@@ -110,6 +109,22 @@ const startTimer = function(){
 
 //Function to display Transaction Movement
 
+const priceFormatter = (locale,currency,price) =>{
+  return new Intl.NumberFormat(locale,{style: "currency",currency:currency}).format(price)
+}
+
+const dateFormatter = (locale,date)=>{
+const options = {
+    day: 'numeric',
+    year:'numeric',
+    month: 'numeric'
+  }
+
+  return new Intl.DateTimeFormat(locale,options).format(date);
+}
+
+//displayTranscation History
+
 const displayTransactionMovement = function(user,sort=false){
 containerMovements.innerHTML = ''; //it will empty jte previous elements
 
@@ -119,16 +134,13 @@ movs.forEach(function(mov,i){
     const type = mov>0 ?"deposit" :"withdrawal"
 
     const date = new Date(user.movementsDates[i]);
-    const day = `${date.getDate()}`.padStart(2,0);
-    const month = `${date.getMonth()+1}`.padStart(2,0);
-    const year = date.getFullYear();
-    const displayDate = `${day}/${month}/${year}`;
+    const displayDate = dateFormatter(user.locale,date)
     
     //using html template iwth the data 
     const html =`<div class="movements__row">
     <div class="movements__type movements__type--${type}">${i+1} ${type}</div>
     <div class="movements__date">${displayDate}</div>
-    <div class="movements__value">${mov.toFixed(2)}€</div>
+    <div class="movements__value">${priceFormatter(user.locale,user.currency,mov)}</div>
   </div>`;
 
   containerMovements.insertAdjacentHTML('afterbegin',html)
@@ -140,15 +152,19 @@ movs.forEach(function(mov,i){
 const displayMovementBalance = function(user){
   user.balance =  user.movements.reduce(function(acc,curr){ return acc+ curr},0)
 
- labelBalance.textContent = `${user.balance.toFixed(2)} EUR`
+ labelBalance.textContent = `${priceFormatter(user.locale,user.currency,user.balance)}`
  //date formatting
   const date = new Date();
-  const day = `${date.getDate()}`.padStart(2,0);
-  const month = `${date.getMonth()+1}`.padStart(2,0);
-  const year = date.getFullYear();
-  const hour = `${date.getHours()}`.padStart(2,0);
-  const min = `${date.getMinutes()}`.padStart(2,0);
-labelDate.textContent = `${day}/${month}/${year},${hour}:${min}`;
+  const options = {
+    hour: 'numeric',
+    minute: "numeric",
+    day: 'numeric',
+    year:'numeric',
+    month: 'numeric'
+  }
+  
+  
+labelDate.textContent = new Intl.DateTimeFormat(user.locale,options).format(date);
 }
 
 // displayMovementBalance(account1.movements)
@@ -158,13 +174,14 @@ labelDate.textContent = `${day}/${month}/${year},${hour}:${min}`;
 const calcSummaryMovement = function(user){
 
   const deposits = user.movements.filter(mov=>mov>0).reduce((acc,dpt)=>acc+dpt,0)
-  labelSumIn.textContent = `${deposits.toFixed(2)}€`
+  console.log("price",priceFormatter(user.locale,user.currency,deposits));
+  labelSumIn.textContent = priceFormatter(user.locale,user.currency,deposits)
 
   const withdrawn = user.movements.filter(mov=>mov<0).reduce((acc,dpt)=>acc+dpt,0)
-  labelSumOut.textContent = `${Math.abs(withdrawn.toFixed(2))}€`
+  labelSumOut.textContent = priceFormatter(user.locale,user.currency,Math.abs(withdrawn.toFixed(2)))
 
   const intrest = user.movements.filter(mov=>mov>0).map(amt=> amt*user.interestRate/100).filter(val=>val>=1).reduce((acc,int)=>acc+int,0)
-  labelSumInterest.textContent = `${intrest.toFixed(2)}€`
+  labelSumInterest.textContent = priceFormatter(user.locale,user.currency,Math.abs(intrest.toFixed(2)))
 
 
 };
@@ -192,7 +209,7 @@ calcSummaryMovement(acc)
 }
 
 //Event handler
-let currentUser,timer;
+
 
 //login Check
 btnLogin.addEventListener('click',function(e){
@@ -241,7 +258,6 @@ btnLoan.addEventListener('click',function(e){
   const amount = Number(inputLoanAmount.value);
   inputLoanAmount.value ='';
   if(amount>0 && currentUser.movements.some(dpt=> dpt> amount*0.1)){
-
     //loan approved after 2.5s
     setTimeout(function(){
     currentUser.movements.push(amount);
@@ -265,6 +281,7 @@ btnClose.addEventListener('click',function(e){
   }
   inputClosePin.value = inputCloseUsername.value ='';
 })
+
 //sorting ascending order 
 let sorted=false;
 btnSort.addEventListener('click',function(e){
@@ -274,18 +291,3 @@ btnSort.addEventListener('click',function(e){
 })
 
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
-
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-const findMax = movements.reduce((acc,cur)=>{if(acc<cur)return cur; else{ return acc}},0);
-
-/////////////////////////////////////////////////
