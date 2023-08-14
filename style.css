@@ -87,7 +87,7 @@
   .app {
     position: relative;
     max-width: 100rem;
-    margin: 4rem auto;
+    margin: 2rem auto;
     display: grid;
     grid-template-columns: 4fr 3fr;
     grid-template-rows: auto repeat(3, 15rem) auto;
@@ -127,7 +127,7 @@
     grid-row: 2 / span 3;
     background-color: #fff;
     border-radius: 1rem;
-    overflow: scroll;
+    overflow-y: scroll;
   }
   
   .movements__row {
